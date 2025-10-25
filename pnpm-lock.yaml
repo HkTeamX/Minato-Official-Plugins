@@ -45,8 +45,8 @@ importers:
   packages/minato-plugin-gugu:
     dependencies:
       '@atri-bot/core':
-        specifier: ^1.1.17
-        version: 1.1.17
+        specifier: ^1.1.19
+        version: 1.1.19
       '@atri-bot/lib-db':
         specifier: ^1.1.1
         version: 1.1.1
@@ -68,8 +68,8 @@ importers:
 
 packages:
 
-  '@atri-bot/core@1.1.17':
-    resolution: {integrity: sha512-6mIjLHzeSdjNjHlEFWoLKHXoPDawFVeYptmV8gEgO0PtFO+yJcojSQo3pNM644OWE8OZ6LZL5VPMY4qUaTcLGQ==}
+  '@atri-bot/core@1.1.19':
+    resolution: {integrity: sha512-rJhmxQ4bCQqNB0UF/G+z2972Av+I76UxthsAXXfa04Fklmq/e5LWp/0AETOfzBQ3Y35OA7foN5aOUOzLTfEH8Q==}
 
   '@atri-bot/lib-db@1.1.1':
     resolution: {integrity: sha512-JbUIArsyawD08wr8fmV9jNLvYQzWlomZvaZ7hmidAsWUdkOE9kml4QuFmIC4+HUkF/ltYSWIIeYv3c3Ef0MySg==}
@@ -465,6 +465,9 @@ packages:
 
   '@types/node@24.5.0':
     resolution: {integrity: sha512-y1dMvuvJspJiPSDZUQ+WMBvF7dpnEqN4x9DDC9ie5Fs/HUZJA3wFp7EhHoVaKX/iI0cRoECV8X2jL8zi0xrHCg==}
+
+  '@types/node@24.9.1':
+    resolution: {integrity: sha512-QoiaXANRkSXK6p0Duvt56W208du4P9Uye9hWLWgGMDTEoKPhuenzNcC4vGUmrNkiOKTlIrBoyNQYNpSwfEZXSg==}
 
   '@types/validator@13.15.3':
     resolution: {integrity: sha512-7bcUmDyS6PN3EuD9SlGGOxM77F8WLVsrwkxyWxKnxzmXoequ6c7741QBrANq6htVRGOITJ7z72mTP6Z4XyuG+Q==}
@@ -1409,6 +1412,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.7.3:
+    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   sequelize-pool@7.1.0:
     resolution: {integrity: sha512-G9c0qlIWQSK29pR/5U2JF5dDQeqqHRragoyahj/Nx4KOOQ3CPPfzxnfqFPCSB7x5UgjOgnZ61nSxz+fjDpRlJg==}
     engines: {node: '>= 10.0.0'}
@@ -1627,6 +1635,9 @@ packages:
   undici-types@7.12.0:
     resolution: {integrity: sha512-goOacqME2GYyOZZfb5Lgtu+1IDmAlAEu5xnD3+xTzS10hT0vzpf0SPjkXwAw9Jm+4n/mQGDP3LO8CPbYROeBfQ==}
 
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
+
   unique-filename@1.1.1:
     resolution: {integrity: sha512-Vmp0jIp2ln35UTXuryvjzkjGdRyf9b2lTXuSYUiPmzRcl3FDtYqAwOnTJkAngD9SWhnoJzDbTKwaOrZ+STtxNQ==}
 
@@ -1700,7 +1711,7 @@ packages:
 
 snapshots:
 
-  '@atri-bot/core@1.1.17':
+  '@atri-bot/core@1.1.19':
     dependencies:
       '@huan_kong/logger': 1.0.6
       commander: 14.0.1
@@ -1912,7 +1923,7 @@ snapshots:
   '@npmcli/fs@1.1.1':
     dependencies:
       '@gar/promisify': 1.1.3
-      semver: 7.7.2
+      semver: 7.7.3
     optional: true
 
   '@npmcli/move-file@1.1.2':
@@ -2005,6 +2016,10 @@ snapshots:
   '@types/node@24.5.0':
     dependencies:
       undici-types: 7.12.0
+
+  '@types/node@24.9.1':
+    dependencies:
+      undici-types: 7.16.0
 
   '@types/validator@13.15.3': {}
 
@@ -2824,7 +2839,7 @@ snapshots:
 
   node-abi@3.78.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   node-addon-api@7.1.1: {}
 
@@ -2837,7 +2852,7 @@ snapshots:
       nopt: 5.0.0
       npmlog: 6.0.2
       rimraf: 3.0.2
-      semver: 7.7.2
+      semver: 7.7.3
       tar: 6.2.1
       which: 2.0.2
     transitivePeerDependencies:
@@ -3056,6 +3071,8 @@ snapshots:
 
   semver@7.7.2: {}
 
+  semver@7.7.3: {}
+
   sequelize-pool@7.1.0: {}
 
   sequelize@6.37.7(sqlite3@5.1.7):
@@ -3070,7 +3087,7 @@ snapshots:
       moment-timezone: 0.5.48
       pg-connection-string: 2.9.1
       retry-as-promised: 7.1.1
-      semver: 7.7.2
+      semver: 7.7.3
       sequelize-pool: 7.1.0
       toposort-class: 1.0.1
       uuid: 8.3.2
@@ -3300,6 +3317,8 @@ snapshots:
 
   undici-types@7.12.0: {}
 
+  undici-types@7.16.0: {}
+
   unique-filename@1.1.1:
     dependencies:
       unique-slug: 2.0.2
@@ -3339,7 +3358,7 @@ snapshots:
 
   wkx@0.5.0:
     dependencies:
-      '@types/node': 24.5.0
+      '@types/node': 24.9.1
 
   word-wrap@1.2.5: {}
 

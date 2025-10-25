@@ -27,13 +27,8 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
   }
   db = new Db(this.atri.config)
 
-  async initDb() {
-    const { sequelize } = this.db
-    await initDb(sequelize)
-  }
-
   async load() {
-    await this.initDb()
+    await initDb(this.db.sequelize)
 
     this.regCommandEvent({
       commandName: /咕咕/,
@@ -75,8 +70,8 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
       return
     }
 
-    const addNum = Plugin.randomInt(this.config.addRange[0], this.config.addRange[1])
-    const result = await Plugin.addUserPigeonNum(context.user_id, addNum, '每日咕咕')
+    const addNum = this.randomInt(this.config.addRange[0], this.config.addRange[1])
+    const result = await this.addUserPigeonNum(context.user_id, addNum, '每日咕咕')
     if (!result) {
       await this.bot.sendMsg(context, [Structs.text(`修改鸽子数失败!`)])
       return
@@ -117,9 +112,7 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
 
   async query({ context, args }: CommandCallback<QueryPigeonCommandContext>) {
     const user_id = args[0] ?? context.user_id
-
-    const result = await Plugin.getUserPigeonInfo(user_id)
-
+    const result = await this.getUserPigeonInfo(user_id)
     await this.bot.sendMsg(context, [
       Structs.text(
         `用户 ${await this.bot.getUsername({ ...context, user_id })} 共有 ${result.pigeon_num} 只鸽子!`,
@@ -127,22 +120,22 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
     ])
   }
 
-  static randomInt(min = 0, max = 1) {
+  randomInt(min = 0, max = 1) {
     // 确保min和max都是整数
     min = Math.ceil(min)
     max = Math.floor(max)
     return Math.floor(Math.random() * (max - min + 1)) + min
   }
 
-  static async getUserPigeonInfo(user_id: number): Promise<Pigeons> {
+  async getUserPigeonInfo(user_id: number): Promise<Pigeons> {
     const pigeonInfo = await Pigeons.findOne({ where: { user_id } })
     if (pigeonInfo) return pigeonInfo
     await Pigeons.create({ user_id, pigeon_num: 0 })
-    return await Plugin.getUserPigeonInfo(user_id)
+    return await this.getUserPigeonInfo(user_id)
   }
 
-  static async addUserPigeonNum(user_id: number, addNum: number, reason: string) {
-    const pigeonInfo = await Plugin.getUserPigeonInfo(user_id)
+  async addUserPigeonNum(user_id: number, addNum: number, reason: string) {
+    const pigeonInfo = await this.getUserPigeonInfo(user_id)
     if (addNum < 0) return false
     pigeonInfo.pigeon_num += addNum
     await pigeonInfo.save()
@@ -155,11 +148,11 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
       reason,
     })
 
-    return pigeonInfo
+    return true
   }
 
-  static async reduceUserPigeonNum(user_id: number, reduceNum: number, reason: string) {
-    const pigeonInfo = await Plugin.getUserPigeonInfo(user_id)
+  async reduceUserPigeonNum(user_id: number, reduceNum: number, reason: string) {
+    const pigeonInfo = await this.getUserPigeonInfo(user_id)
     if (reduceNum > 0 || pigeonInfo.pigeon_num - reduceNum < 0) return false
     pigeonInfo.pigeon_num += reduceNum
     await pigeonInfo.save()
@@ -172,6 +165,6 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
       reason,
     })
 
-    return pigeonInfo
+    return true
   }
 }
