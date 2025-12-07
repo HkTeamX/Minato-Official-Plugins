@@ -153,14 +153,14 @@ export class Plugin extends BasePlugin<GuGuPluginConfig> {
 
   async reduceUserPigeonNum(user_id: number, reduceNum: number, reason: string) {
     const pigeonInfo = await this.getUserPigeonInfo(user_id)
-    if (reduceNum > 0 || pigeonInfo.pigeon_num - reduceNum < 0) return false
-    pigeonInfo.pigeon_num += reduceNum
+    if (reduceNum <= 0 || pigeonInfo.pigeon_num - reduceNum < 0) return false
+    pigeonInfo.pigeon_num -= reduceNum
     await pigeonInfo.save()
 
     await PigeonHistories.create({
       user_id,
       operation: reduceNum,
-      prev_num: pigeonInfo.pigeon_num - reduceNum,
+      prev_num: pigeonInfo.pigeon_num + reduceNum,
       current_num: pigeonInfo.pigeon_num,
       reason,
     })

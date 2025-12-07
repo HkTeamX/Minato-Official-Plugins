@@ -1,6 +1,6 @@
 {
   "name": "@minato-bot/atri-bot-plugin-corpus",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "corpus learning plugin for atri framework",
   "author": "huan_kong",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "@atri-bot/lib-db": "^1.1.2",
     "@atri-bot/lib-request": "^1.1.12",
     "@huan_kong/logger": "^1.0.6",
+    "@minato-bot/atri-bot-plugin-gugu": "^1.0.1",
     "dayjs": "^1.11.19",
     "node-napcat-ts": "^0.4.20",
     "sequelize": "^6.37.7"
