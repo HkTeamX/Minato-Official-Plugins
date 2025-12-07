@@ -18,6 +18,7 @@ import {
 import path from 'node:path'
 import { Axios } from '@atri-bot/lib-request'
 import fs from 'node:fs'
+import { Plugin as GuGuPlugin } from '@minato-bot/atri-bot-plugin-gugu'
 
 export class Plugin extends BasePlugin<CorpusPluginConfig> {
   defaultConfig: CorpusPluginConfig = {
@@ -38,8 +39,19 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
   // 用户忘记状态
   forgeters: Map<number, ForgetState> = new Map()
 
+  // 加载
+  guguPlugin!: GuGuPlugin
+
   async load() {
     await initDb(this.db.sequelize)
+
+    const plugin = await this.atri.loadPlugin<GuGuPlugin>('@minato-bot/atri-bot-plugin-gugu')
+    if (plugin[0] !== 0) {
+      throw new Error('Corpus插件加载失败, 加载 @minato-bot/atri-bot-plugin-gugu 插件失败')
+    }
+
+    this.guguPlugin = plugin[1]
+
     await this.loadRules()
     if (!fs.existsSync(this.imagePath)) fs.mkdirSync(this.imagePath, { recursive: true })
 
@@ -156,6 +168,16 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
 
   // 学习命令
   async learn({ context, params }: CommandCallback<LearnCorpusCommandContext>) {
+    const info = await this.guguPlugin.getUserPigeonInfo(context.user_id)
+    if (info.pigeon_num < this.config.learnCost) {
+      await this.bot.sendMsg(context, [
+        Structs.text(
+          `学习需要消耗 ${this.config.learnCost} 只鸽子，你当前只有 ${info.pigeon_num} 只鸽子，无法学习~`,
+        ),
+      ])
+      return
+    }
+
     this.learners.set(context.user_id, {
       step: 1,
       mode: params.mode,
@@ -172,6 +194,16 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
 
   // 忘记命令
   async forget({ context }: CommandCallback) {
+    const info = await this.guguPlugin.getUserPigeonInfo(context.user_id)
+    if (info.pigeon_num < this.config.forgetCost) {
+      await this.bot.sendMsg(context, [
+        Structs.text(
+          `忘记需要消耗 ${this.config.forgetCost} 只鸽子，你当前只有 ${info.pigeon_num} 只鸽子，无法忘记~`,
+        ),
+      ])
+      return
+    }
+
     this.forgeters.set(context.user_id, {
       step: 1,
       timer: setTimeout(() => {
@@ -237,10 +269,6 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
     }
 
     if (state.step === 2) {
-      // 第二步：获取回复
-      const valid = await this.validateReply(context)
-      if (!valid) return 'quit'
-
       state.reply = context
       state.step = 3
       await this.bot.sendMsg(context, [Structs.text('确认保存吗? [Y/N]\n回复 退出 来退出学习')])
@@ -252,16 +280,33 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
       const confirm = firstMessage?.type === 'text' && firstMessage.data.text.toUpperCase() === 'Y'
 
       if (confirm) {
+        const result = await this.guguPlugin.reduceUserPigeonNum(
+          state.context.user_id,
+          this.config.forgetCost,
+          '学习关键词',
+        )
+
+        if (!result) {
+          clearTimeout(state.timer)
+          this.learners.delete(context.user_id)
+          await this.bot.sendMsg(context, [Structs.text('扣除鸽子失败，学习已取消~')])
+          return 'quit'
+        }
+
         // 检查reply中是否存在图片, 如果有图片则下载图片然后保存
         for (let index = 0; index < state.reply!.message.length; index++) {
           const element = state.reply!.message[index]
           if (element.type === 'image') {
-            const res = await this.axios.downloadFile(
-              { url: element.data.url },
-              this.imagePath,
-              element.data.file,
-            )
-            state.reply!.message[index] = Structs.image(res) as Receive['image']
+            try {
+              const res = await this.axios.downloadFile(
+                { url: element.data.url },
+                this.imagePath,
+                element.data.file,
+              )
+              state.reply!.message[index] = Structs.image(res) as Receive['image']
+            } catch {
+              // 下载失败则使用原始链接
+            }
           }
         }
 
@@ -338,6 +383,19 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
       const confirm = firstMessage?.type === 'text' && firstMessage.data.text.toUpperCase() === 'Y'
 
       if (confirm && state.context) {
+        const result = await this.guguPlugin.reduceUserPigeonNum(
+          state.context.user_id,
+          this.config.forgetCost,
+          '忘记关键词',
+        )
+
+        if (!result) {
+          clearTimeout(state.timer)
+          this.learners.delete(context.user_id)
+          await this.bot.sendMsg(context, [Structs.text('扣除鸽子失败，忘记已取消~')])
+          return 'quit'
+        }
+
         const corpus = await Corpus.findOne({
           where: {
             keyword: JSON.stringify(context.message),
@@ -368,19 +426,6 @@ export class Plugin extends BasePlugin<CorpusPluginConfig> {
 
     if (!context.message.every((m) => validTypes.includes(m.type))) {
       await this.bot.sendMsg(context, [Structs.text('关键词只支持文本和表情，请重新输入')])
-      return false
-    }
-
-    return true
-  }
-
-  /**
-   * 验证回复的合法性
-   */
-  async validateReply(context: AllHandlers['message']): Promise<boolean> {
-    const validTypes = ['text', 'image', 'face']
-    if (!context.message.every((m) => validTypes.includes(m.type))) {
-      await this.bot.sendMsg(context, [Structs.text('回复只支持文本、图片和表情')])
       return false
     }
 

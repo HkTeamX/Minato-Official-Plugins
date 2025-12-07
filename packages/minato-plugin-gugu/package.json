@@ -1,6 +1,6 @@
 {
   "name": "@minato-bot/atri-bot-plugin-gugu",
-  "version": "1.1.0",
+  "version": "1.0.1",
   "description": "cron lib for atri framework",
   "author": "huan_kong",
   "license": "MIT",
@@ -18,11 +18,11 @@
     "type-check": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "@atri-bot/core": "^1.1.19",
-    "@atri-bot/lib-db": "^1.1.1",
+    "@atri-bot/core": "^1.1.30",
+    "@atri-bot/lib-db": "^1.1.2",
     "@huan_kong/logger": "^1.0.6",
-    "cron": "^4.3.3",
-    "dayjs": "^1.11.18",
+    "cron": "^4.3.5",
+    "dayjs": "^1.11.19",
     "node-napcat-ts": "^0.4.20",
     "sequelize": "^6.37.7"
   }
