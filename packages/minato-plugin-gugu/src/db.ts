@@ -62,21 +62,23 @@ export class PigeonHistories
 }
 
 export const initDb = async (sequelize: Sequelize, ignoreVersion = false) => {
-  // 检查全局版本标志位
-  const global = globalThis as unknown as GlobalWithVersion
-  const globalVersion = global[VERSION_KEY]
+  if (!ignoreVersion) {
+    // 检查全局版本标志位
+    const global = globalThis as unknown as GlobalWithVersion
+    const globalVersion = global[VERSION_KEY]
 
-  if (globalVersion && globalVersion !== DB_SCHEMA_VERSION && !ignoreVersion) {
-    throw new Error(
-      `数据库版本冲突！检测到多个版本的 @minato-bot/atri-bot-plugin-gugu 同时运行。\n` +
-        `已初始化版本: ${globalVersion}\n` +
-        `当前版本: ${DB_SCHEMA_VERSION}\n` +
-        `请确保所有依赖此插件的插件都使用最新版本。`,
-    )
+    if (globalVersion && globalVersion !== DB_SCHEMA_VERSION) {
+      throw new Error(
+        `数据库版本冲突！检测到多个版本的 @minato-bot/atri-bot-plugin-gugu 同时运行。\n` +
+          `已初始化版本: ${globalVersion}\n` +
+          `当前版本: ${DB_SCHEMA_VERSION}\n` +
+          `请确保所有依赖此插件的插件都使用最新版本。`,
+      )
+    }
+
+    // 标记当前版本
+    global[VERSION_KEY] = DB_SCHEMA_VERSION
   }
-
-  // 标记当前版本
-  global[VERSION_KEY] = DB_SCHEMA_VERSION
 
   Pigeons.init(
     {
