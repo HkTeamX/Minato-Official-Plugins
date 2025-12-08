@@ -27,9 +27,8 @@ export interface WxjsxyAddAccountCommandContext {
 }
 
 export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
-  configName = '@minato-bot__atri-bot-plugin-wxjsxy'
   defaultConfig: WxjsxyPluginConfig = {
-    accounts: [],
+    accounts: {},
   }
 
   api = new Api({
@@ -49,6 +48,8 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
   })
 
   async load() {
+    if (Array.isArray(this.config.accounts)) this.config.accounts = {}
+
     this.regCommandEvent({
       commandName: 'wxjsxy添加账号',
       commander: new Command()
