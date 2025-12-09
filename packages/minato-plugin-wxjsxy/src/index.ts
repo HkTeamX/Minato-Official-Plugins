@@ -182,7 +182,7 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
           dyProcessList.data.rows
             .map(
               (item) =>
-                `- 申请时间: ${item.processStartTime}\n   审核状态: ${item.approvaState}\n  开始时间: ${item.start_time}\n   结束时间: ${item.end_time}\n`,
+                `- 申请时间: ${item.processStartTime}\n   审核状态: ${item.approvaState}\n   开始时间: ${item.start_time}\n   结束时间: ${item.end_time}\n`,
             )
             .join(''),
         ),
