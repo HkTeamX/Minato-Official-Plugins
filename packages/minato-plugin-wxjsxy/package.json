@@ -1,7 +1,7 @@
 {
-  "name": "@minato-bot/atri-bot-plugin-gugu",
-  "version": "1.0.2",
-  "description": "gugu for atri framework",
+  "name": "@minato-bot/atri-bot-plugin-wxjsxy",
+  "version": "1.0.3",
+  "description": "wxjsxy for atri framework",
   "author": "huan_kong",
   "license": "MIT",
   "type": "module",
@@ -19,10 +19,13 @@
   },
   "dependencies": {
     "@atri-bot/core": "^1.1.30",
-    "@atri-bot/lib-db": "^1.1.2",
+    "@atri-bot/lib-request": "^1.1.12",
     "@huan_kong/logger": "^1.0.6",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.19",
-    "node-napcat-ts": "^0.4.20",
-    "sequelize": "^6.37.7"
+    "node-napcat-ts": "^0.4.20"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2"
   }
 }
