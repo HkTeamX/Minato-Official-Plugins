@@ -118,6 +118,7 @@ export class Api {
           processStartTime: string
           start_time: string
           end_time: string
+          id: string
         }[]
       },
       { pageNo: number; pageSize: number }
@@ -134,9 +135,9 @@ export class Api {
       },
     })
 
-    for (const row of list.data.rows) {
+    const promises = list.data.rows.map(async (row) => {
       const data = {
-        instanceId: 'eead9e3f-1df9-47f6-ad9e-3f1df9c7f6e9',
+        instanceId: row.id,
       }
       const sign = CryptoJS.MD5(`myappsecret${JSON.stringify(data)}myappsecret`).toString()
 
@@ -158,7 +159,9 @@ export class Api {
         detail.data.rows.hisTasks?.[1]?.formSchema?.formProperties?.[0]?.value ?? '获取失败'
       row['end_time'] =
         detail.data.rows.hisTasks?.[1]?.formSchema?.formProperties?.[1]?.value ?? '获取失败'
-    }
+    })
+
+    await Promise.all(promises)
 
     return list
   }
