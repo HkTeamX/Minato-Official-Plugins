@@ -118,7 +118,7 @@ export class Api {
           processStartTime: string
           start_time: string
           end_time: string
-          id: string
+          instanceId: string
         }[]
       },
       { pageNo: number; pageSize: number }
@@ -137,7 +137,7 @@ export class Api {
 
     const promises = list.data.rows.map(async (row) => {
       const data = {
-        instanceId: row.id,
+        instanceId: row.instanceId,
       }
       const sign = CryptoJS.MD5(`myappsecret${JSON.stringify(data)}myappsecret`).toString()
 
