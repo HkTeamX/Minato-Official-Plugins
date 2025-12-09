@@ -142,8 +142,8 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
       const dyTokenRes = await this.api.getDyToken(casCookie)
       const dyAction = await this.api.setDyProcess(
         dyTokenRes.data.token,
-        dayjs().hour(6).minute(30).add(1, 'day').format('YYYY-MM-DD HH:mm'),
-        dayjs().hour(20).minute(50).add(1, 'day').format('YYYY-MM-DD HH:mm'),
+        dayjs().hour(6).minute(30).format('YYYY-MM-DD HH:mm'),
+        dayjs().hour(20).minute(50).format('YYYY-MM-DD HH:mm'),
         '是',
         '是',
         '事假',
@@ -181,7 +181,8 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
         Structs.text(
           dyProcessList.data.rows
             .map(
-              (item) => `- 申请时间: ${item.processStartTime}\n   审核状态: ${item.approvaState}\n`,
+              (item) =>
+                `- 申请时间: ${item.processStartTime}\n   审核状态: ${item.approvaState}\n  开始时间: ${item.start_time}\n   结束时间: ${item.end_time}\n`,
             )
             .join(''),
         ),

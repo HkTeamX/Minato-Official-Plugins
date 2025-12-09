@@ -96,15 +96,32 @@ export class Api {
     })
   }
 
-  getDyProcessList(
-    token: string,
-  ): Promise<{ data: { rows: { approvaState: string; processStartTime: string }[] } }> {
+  async getDyProcessList(token: string): Promise<{
+    data: {
+      rows: {
+        approvaState: string
+        processStartTime: string
+        start_time: string
+        end_time: string
+      }[]
+    }
+  }> {
     const data = {
       pageNo: 1,
       pageSize: 5,
     }
     const sign = CryptoJS.MD5(`myappsecret${JSON.stringify(data)}myappsecret`).toString()
-    return this.axios.post({
+    const list = await this.axios.post<
+      {
+        rows: {
+          approvaState: string
+          processStartTime: string
+          start_time: string
+          end_time: string
+        }[]
+      },
+      { pageNo: number; pageSize: number }
+    >({
       url: `http://dy.wxjsxy.com.cn/prdapi/activiti/task/myapply?user_info_query_json=${encodeURIComponent(JSON.stringify(data))}`,
       data,
       headers: {
@@ -116,5 +133,33 @@ export class Api {
         'Content-Type': 'application/json',
       },
     })
+
+    for (const row of list.data.rows) {
+      const data = {
+        instanceId: 'eead9e3f-1df9-47f6-ad9e-3f1df9c7f6e9',
+      }
+      const sign = CryptoJS.MD5(`myappsecret${JSON.stringify(data)}myappsecret`).toString()
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const detail = await this.axios.post<any, any>({
+        url: `http://dy.wxjsxy.com.cn/prdapi/activiti/task/done/info/byInstanceId?user_info_query_json=${encodeURIComponent(JSON.stringify(data))}`,
+        data,
+        headers: {
+          token,
+          mode: 'wxa',
+          sign,
+          timestamp: new Date().getTime(),
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+        },
+      })
+
+      row['start_time'] =
+        detail.data.rows.hisTasks?.[1]?.formSchema?.formProperties?.[0]?.value ?? '获取失败'
+      row['end_time'] =
+        detail.data.rows.hisTasks?.[1]?.formSchema?.formProperties?.[1]?.value ?? '获取失败'
+    }
+
+    return list
   }
 }
