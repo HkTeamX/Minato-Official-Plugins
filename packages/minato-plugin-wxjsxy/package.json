@@ -1,6 +1,6 @@
 {
   "name": "@minato-bot/atri-bot-plugin-wxjsxy",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "wxjsxy for atri framework",
   "author": "huan_kong",
   "license": "MIT",
@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@atri-bot/core": "^1.1.30",
+    "@atri-bot/lib-cron": "^1.1.2",
     "@atri-bot/lib-request": "^1.1.12",
     "@huan_kong/logger": "^1.0.6",
+    "cron-parser": "^5.4.0",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.19",
     "node-napcat-ts": "^0.4.20"
