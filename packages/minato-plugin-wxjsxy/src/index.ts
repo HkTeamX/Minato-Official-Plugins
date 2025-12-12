@@ -13,7 +13,6 @@ export interface WxjsxyAccount {
 
 export interface WxjsxyCron {
   cron: string
-  user_id: number
   day: number
 }
 
@@ -276,7 +275,6 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
 
     this.config.crons[context.user_id] = {
       cron: params.cron,
-      user_id: context.user_id,
       day: parseInt(params.day),
     }
     this.saveConfig()
@@ -306,10 +304,11 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
         cronTime: cronConfig.cron,
         onTick: async () => {
           await this._process(
-            { message_type: 'private', user_id: cronConfig.user_id },
+            { message_type: 'private', user_id: parseInt(userId) },
             { day: cronConfig.day.toString() },
           )
         },
+        start: true,
       })
     })
   }
