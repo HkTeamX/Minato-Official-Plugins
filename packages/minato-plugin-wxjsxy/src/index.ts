@@ -273,6 +273,12 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
       return
     }
 
+    // 判断是否有这个用户的好友
+    if (!(await this.bot.isFriend(context))) {
+      await this.bot.sendMsg(context, [Structs.text('请先添加机器人为好友后再添加定时任务')])
+      return
+    }
+
     this.config.crons[context.user_id] = {
       cron: params.cron,
       day: parseInt(params.day),
@@ -314,8 +320,8 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
   }
 
   clearCronJobs() {
-    Object.entries(this.cron.cronJobs)
-      .filter(([name, _]) => name.startsWith('wxjsxy-'))
-      .forEach(([, job]) => job.stop())
+    Object.keys(this.cron.cronJobs)
+      .filter((name) => name.startsWith('wxjsxy-'))
+      .forEach((name) => this.cron.remove(name))
   }
 }
