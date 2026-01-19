@@ -47,6 +47,12 @@ export interface WxjsxyAddCronCommandContext {
   }
 }
 
+export interface WxjsxyProcessListCommandContext {
+  params: {
+    pageSize: string
+  }
+}
+
 export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
   defaultConfig: WxjsxyPluginConfig = {
     accounts: {},
@@ -100,7 +106,9 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
 
     this.regCommandEvent({
       commandName: 'wxjsxy请假情况',
-      commander: new Command().description('钉钉请假情况'),
+      commander: new Command()
+        .description('钉钉请假情况')
+        .option('-p, --pageSize <pageSize>', '查询请假记录数量，默认为1', '1'),
       callback: this.processList.bind(this),
     })
 
@@ -209,7 +217,7 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
     }
   }
 
-  async processList({ context }: CommandCallback) {
+  async processList({ context, params }: CommandCallback<WxjsxyProcessListCommandContext>) {
     const userId = context.user_id
     const account = this.config.accounts[userId]
 
@@ -226,7 +234,10 @@ export class Plugin extends BasePlugin<WxjsxyPluginConfig> {
       const loginTokenRes = await this.api.getCasLoginToken(loginRes.data.tgt)
       const casCookie = await this.api.getDyCookie(loginTokenRes.data)
       const dyTokenRes = await this.api.getDyToken(casCookie)
-      const dyProcessList = await this.api.getDyProcessList(dyTokenRes.data.token)
+      const dyProcessList = await this.api.getDyProcessList(dyTokenRes.data.token, {
+        pageNo: 1,
+        pageSize: parseInt(params.pageSize),
+      })
       await this.bot.sendMsg(context, [
         Structs.text(`请假情况:\n`),
         Structs.text(

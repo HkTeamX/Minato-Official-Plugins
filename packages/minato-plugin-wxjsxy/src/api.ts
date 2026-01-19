@@ -96,7 +96,10 @@ export class Api {
     })
   }
 
-  async getDyProcessList(token: string): Promise<{
+  async getDyProcessList(
+    token: string,
+    data: { pageNo: number; pageSize: number },
+  ): Promise<{
     data: {
       rows: {
         approvaState: string
@@ -106,10 +109,6 @@ export class Api {
       }[]
     }
   }> {
-    const data = {
-      pageNo: 1,
-      pageSize: 5,
-    }
     const sign = CryptoJS.MD5(`myappsecret${JSON.stringify(data)}myappsecret`).toString()
     const list = await this.axios.post<
       {
